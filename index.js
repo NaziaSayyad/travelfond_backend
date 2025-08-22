@@ -1,7 +1,7 @@
 // Backend 
 const express = require("express");
 const mongoose = require("mongoose");
-const PORT = 8080;
+const PORT = 8080 || 5000;
 const nodemailer = require("nodemailer");
 const DB_URL = `mongodb+srv://Nazia:Dob1062000@cluster0.p4xc33c.mongodb.net/TravelFond`;
 const app = express();
