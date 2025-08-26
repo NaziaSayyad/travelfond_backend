@@ -39,7 +39,7 @@ app.get("/spiti", async (req, res) => {
   res.send(response);
 });
 
-app.get("/domestic", async(req,res) =>{
+app.get("/domestic", async (req, res) => {
   const response = await DomesticModel.find();
   res.send(response);
 });
@@ -57,7 +57,7 @@ app.get("/domestic/:id", async (req, res) => {
 });
 
 
-app.get("/international", async(req,res) =>{
+app.get("/international", async (req, res) => {
   const response = await InternationalModel.find();
   res.send(response);
 });
@@ -131,17 +131,18 @@ app.post("/booking", async (req, res) => {
     res.status(500).json({ message: "Failed to save registration." });
   }
 });
+
 app.post("/enquiry", async (req, res) => {
   const { name, email, phone, dob, batch, cost, people, tripdate } = req.body;
   try {
     // 🔐 Create transporter with your Gmail credentials
     const transporter = nodemailer.createTransport({
-       host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
+      host: 'smtp.ethereal.email',
+      port: 587,
+      auth: {
         user: 'flavio.quigley@ethereal.email',
         pass: 'feuXrQYmQY6Ddx8Nqy'
-    }
+      }
     });
 
     // 📩 Compose email
@@ -170,6 +171,35 @@ app.post("/enquiry", async (req, res) => {
   }
 });
 
+
+// Subscribe API
+app.post("/subscribe", async (req, res) => {
+  const { email } = req.body;
+  try {
+    // Configure transporter for Hostinger SMTP
+    let transporter = nodemailer.createTransport({
+      host: "smtp.hostinger.com",   // Hostinger SMTP
+      port: 465,                    // SSL port (or 587 for TLS)
+      secure: true,                 // true for 465, false for 587
+      auth: {
+        user: "operationteam@thetravelfond.com", // your mailbox
+        pass: "Travelfond@756",             // mailbox password
+      },
+    });
+    // Send mail
+    await transporter.sendMail({
+      from: `"Travel Fond Newsletter" <operationteam@thetravelfond.com>`,
+      to: "operationteam@thetravelfond.com",  // your receiving email
+      subject: "New Newsletter Subscription",
+      text: `A new user subscribed with email: ${email}`,
+    });
+
+    res.json({ message: "Subscription successful!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
 app.get("/", async (req, res) => {
   res.send("API is running")
 });
