@@ -133,41 +133,30 @@ app.post("/booking", async (req, res) => {
 });
 
 app.post("/enquiry", async (req, res) => {
-  const { name, email, phone, dob, batch, cost, people, tripdate } = req.body;
-  try {
-    // 🔐 Create transporter with your Gmail credentials
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
+  const { enquiry_form } = req.body;
+    try {
+    // Configure transporter for Hostinger SMTP
+    let transporter = nodemailer.createTransport({
+      host: "smtp.hostinger.com",   // Hostinger SMTP
+      port: 465,                    // SSL port (or 587 for TLS)
+      secure: true,                 // true for 465, false for 587
       auth: {
-        user: 'flavio.quigley@ethereal.email',
-        pass: 'feuXrQYmQY6Ddx8Nqy'
-      }
+        user: "operationteam@thetravelfond.com", // your mailbox
+        pass: "Travelfond@756",             // mailbox password
+      },
+    });
+    // Send mail
+    await transporter.sendMail({
+      from: `"Travel Fond Newsletter" <operationteam@thetravelfond.com>`,
+      to: "operationteam@thetravelfond.com",  // your receiving email
+      subject: "Get Quotes",
+      text: `A new user customize the trip with this ${enquiry_form}`,
     });
 
-    // 📩 Compose email
-    const mailOptions = {
-      from: '"Travel Booking" <sayyadnazia756@gmail.com>',
-      to: "salmanahmed09117@gmail.com",  // where you want to receive emails
-      subject: "New Booking Form Submission",
-      html: `
-        <h3>New Booking Received</h3>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Date of Birth:</strong> ${dob}</p>
-        <p><strong>Number of People:</strong> ${people}</p>
-      `
-    };
-    //  <p><strong>Batch:</strong> ${batch}</p>
-    //         <p><strong>Cost:</strong> ₹${cost}</p>
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ message: 'Form submitted and email sent' });
+    res.json({ message: "Subscription successful!" });
   } catch (error) {
-    console.error('Email sending failed:', error);
-    res.status(500).json({ message: 'Error sending email', err: error });
+    console.error(error);
+    res.status(500).json({ error: "Failed to send email" });
   }
 });
 
