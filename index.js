@@ -105,30 +105,30 @@ app.get("/spiti/:id", async (req, res) => {
 
 
 app.post("/booking", async (req, res) => {
-  const { batch, people } = req.body;
+       const { enquiry_form } = req.body;
+    try {
+    // Configure transporter for Hostinger SMTP
+    let transporter = nodemailer.createTransport({
+      host: "smtp.hostinger.com",   // Hostinger SMTP
+      port: 465,                    // SSL port (or 587 for TLS)
+      secure: true,                 // true for 465, false for 587
+      auth: {
+        user: "operationteam@thetravelfond.com", // your mailbox
+        pass: "Travelfond@756",             // mailbox password
+      },
+    });
+    // Send mail
+    await transporter.sendMail({
+      from: `"Travel Fond Newsletter" <operationteam@thetravelfond.com>`,
+      to: "operationteam@thetravelfond.com",  // your receiving email
+      subject: "Get Quotes",
+      text: `A new user customize the trip with this ${enquiry_form}`,
+    });
 
-  try {
-    // Step 1: Calculate total people already registered in the batch
-    const registrations = await RegistrationModel.find({ batch });
-
-    const totalPeople = registrations.reduce((sum, reg) => {
-      return sum + (reg.people || 0);
-    }, 0);
-
-    // Step 2: Check if adding this would exceed the limit
-    if (totalPeople + Number(people) > 40) {
-      return res.status(400).json({ message: "No seats available for this batch." });
-    }
-
-    // Step 3: Save the new registration
-    const newEntry = new RegistrationModel(req.body);
-    await newEntry.save();
-
-    res.status(201).json({ message: "Registration successful." });
-
+    res.json({ message: "Booking Enquiry successful!" });
   } catch (error) {
-    console.error("Error saving registration:", error);
-    res.status(500).json({ message: "Failed to save registration." });
+    console.error(error);
+    res.status(500).json({ error: "Failed to send email" });
   }
 });
 
