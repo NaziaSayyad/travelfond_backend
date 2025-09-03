@@ -12,6 +12,7 @@ const RegistrationModel = require("./Models/Registration");
 const SpitiModel = require("./Models/Spiti");
 const DomesticModel = require("./Models/domestic");
 const InternationalModel = require("./Models/International");
+const WeekendModel = require("./Models/Weekend");
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
@@ -43,6 +44,17 @@ app.get("/domestic", async (req, res) => {
   const response = await DomesticModel.find();
   res.send(response);
 });
+
+app.get("/weekend", async (req, res) => {
+    try {
+        const states = await WeekendModel.find();
+        res.send(states); // return array of state names
+      } catch (error) {
+        res.status(500).json({ error: "Failed to fetch states" });
+      }
+});
+
+
 
 app.get("/domestic/:id", async (req, res) => {
   try {
