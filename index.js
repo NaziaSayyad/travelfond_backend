@@ -54,6 +54,24 @@ app.get("/weekend", async (req, res) => {
       }
 });
 
+app.get("/weekend/:id/city/:city_id", async (req, res) => {
+  try {
+    const { id, city_id } = req.params;
+
+    const state = await WeekendModel.findOne({ id: Number(id) });
+    if (!state) return res.status(404).json({ error: "State not found" });
+
+    // use "id" instead of "city_id"
+    
+    const city = state.city.find(c => 
+      c.city_id == city_id || c.id == city_id);
+    if (!city) return res.status(404).json({ message: "City not found" });
+
+    return res.json({ city });  // ✅ use return so no further code executes
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
 
 
 app.get("/domestic/:id", async (req, res) => {
